@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Development MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      R1.0, D1.1
+// @version      R1.1
 // @description  Highlights MAL titles with different font colors. This is the Development version. Only works locally for me.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -37,7 +37,7 @@
     }
   }
 
-  // Change font color on myanimelist.net/topanime.php
+  // Change color on myanimelist.net/topanime.php
   function colorTopAnime(statusTypes){
     var table = document.getElementsByClassName("hoverinfo_trigger fl-l fs14 fw-b");
     var tr = document.getElementsByTagName("tr");
@@ -48,7 +48,7 @@
     }
   }
 
-  // Change font color on myanimelist.net/people/*/*
+  // Change color on myanimelist.net/people/*/*
   function colorPeoplePage(statusTypes){
     var table = document.getElementsByTagName("tr");
 
