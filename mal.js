@@ -21,29 +21,30 @@
   // Adds attributes to the correct elements
   function addAttributes(statusTypes, id, element){
    if (statusTypes["watching"].includes(parseInt(id))){
-      element.setAttribute("id", "watching");
+      element.setAttribute("class", "HL-watching");
 
     }else if (statusTypes["completed"].includes(parseInt(id))){
-      element.setAttribute("id", "completed");
+      element.setAttribute("class", "HL-completed");
 
     }else if (statusTypes["onHold"].includes(parseInt(id))){
-      element.setAttribute("id", "onHold");
+      element.setAttribute("class", "HL-onHold");
 
     }else if (statusTypes["dropped"].includes(parseInt(id))){
-      element.setAttribute("id", "dropped");
+      element.setAttribute("class", "HL-dropped");
 
     }else if (statusTypes["planToWatch"].includes(parseInt(id))){
-      element.setAttribute("id", "planToWatch");
+      element.setAttribute("class", "HL-planToWatch");
     }
   }
 
   // Change font color on myanimelist.net/topanime.php
   function colorTopAnime(statusTypes){
     var table = document.getElementsByClassName("hoverinfo_trigger fl-l fs14 fw-b");
+    var tr = document.getElementsByTagName("tr");
 
     for (var i = 0; i < table.length; i++){
       var id = table[i].getAttribute("href").split("/")[4];
-      addAttributes(statusTypes, id, table[i]);
+      addAttributes(statusTypes, id, tr[i + 1]);
     }
   }
 
@@ -56,7 +57,7 @@
      var url = series.getAttribute("href").split("/")
 
      if (url.length == 6){var id = url[4]}
-      addAttributes(statusTypes, id, series);
+      addAttributes(statusTypes, id, table[i]);
     }
   }
 
@@ -89,11 +90,14 @@
 
   // Inject CSS
   $('<style type="text/css" />').html(
-    "#watching{color: #36d145;}" +
-    "#completed{color: #034f1c;}" +
-    "#onHold{color: #f1c83e;}" +
-    "#dropped{color: #a12f31;}" + 
-    "#planToWatch{color: #000000;}"
+    ".information, .your-score .text { color: #323232 !important;}" +
+    ".status.watching {border: #4f74c8 1px solid !important;}" +
+
+    ".HL-watching {background-color: #34ce0f !important;}" +
+    ".HL-completed {background-color: #ccede4 !important;}" +
+    ".HL-onHold {background-color: #f1c83e !important;}" +
+    ".HL-dropped {background-color: #f76265 !important;}" + 
+    ".HL-planToWatch {background-color: #dcc8aa !important;}" 
 
     ).appendTo('head');
 
