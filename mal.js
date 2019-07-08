@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      R1.1
+// @version      1.1.1
 // @description  Highlights MAL titles with different font colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -51,9 +51,7 @@
   // Change color on myanimelist.net/people/*/*
   function colorPeoplePage(statusTypes){
     var tbody = document.getElementsByTagName("tbody")[1];
-    console.log(tbody);
     var tr = tbody.getElementsByTagName("tr");
-    console.log(tr);
 
     for (var i = 0; i < tr.length; i++){
      var series = tr[i].getElementsByTagName("a")[1];
