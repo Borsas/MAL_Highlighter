@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Development MAL Highlighter
+// @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
 // @version      R1.1
-// @description  Highlights MAL titles with different font colors. This is the Development version. Only works locally for me.
+// @description  Highlights MAL titles with different font colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
 // @grant        none
@@ -39,27 +39,31 @@
 
   // Change color on myanimelist.net/topanime.php
   function colorTopAnime(statusTypes){
-    var table = document.getElementsByClassName("hoverinfo_trigger fl-l fs14 fw-b");
+    var seriesIds = document.getElementsByClassName("hoverinfo_trigger fl-l fs14 fw-b");
     var tr = document.getElementsByTagName("tr");
 
-    for (var i = 0; i < table.length; i++){
-      var id = table[i].getAttribute("href").split("/")[4];
+    for (var i = 0; i < seriesIds.length; i++){
+      var id = seriesIds[i].getAttribute("href").split("/")[4];
       addAttributes(statusTypes, id, tr[i + 1]);
     }
   }
 
   // Change color on myanimelist.net/people/*/*
   function colorPeoplePage(statusTypes){
-    var table = document.getElementsByTagName("tr");
+    var tbody = document.getElementsByTagName("tbody")[1];
+    console.log(tbody);
+    var tr = tbody.getElementsByTagName("tr");
+    console.log(tr);
 
-    for (var i = 0; i < table.length; i++){
-     var series = table[i].getElementsByTagName("a")[1];
+    for (var i = 0; i < tr.length; i++){
+     var series = tr[i].getElementsByTagName("a")[1];
      var url = series.getAttribute("href").split("/")
 
      if (url.length == 6){var id = url[4]}
-      addAttributes(statusTypes, id, table[i]);
+      addAttributes(statusTypes, id, tr[i]);
     }
   }
+
 
   //Sorts all statuses from the json
   function getStatusTypes(data){
@@ -86,13 +90,11 @@
   }
 
   // Get username
-  var user = $('.header-profile-link').text();
+  var user = document.getElementsByClassName('header-profile-link')[0].text;
 
   // Inject CSS
   $('<style type="text/css" />').html(
     ".information, .your-score .text { color: #323232 !important;}" +
-    ".status.watching {border: #4f74c8 1px solid !important;}" +
-
     ".HL-watching {background-color: #34ce0f !important;}" +
     ".HL-completed {background-color: #ccede4 !important;}" +
     ".HL-onHold {background-color: #f1c83e !important;}" +
