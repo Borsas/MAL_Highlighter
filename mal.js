@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      1.1.1
-// @description  Highlights MAL titles with different font colors.
+// @version      1.1.2
+// @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
 // @grant        none
@@ -39,12 +39,11 @@
 
   // Change color on myanimelist.net/topanime.php
   function colorTopAnime(statusTypes){
-    var seriesIds = document.getElementsByClassName("hoverinfo_trigger fl-l fs14 fw-b");
     var tr = document.getElementsByTagName("tr");
 
-    for (var i = 0; i < seriesIds.length; i++){
-      var id = seriesIds[i].getAttribute("href").split("/")[4];
-      addAttributes(statusTypes, id, tr[i + 1]);
+    for (var i = 1; i < tr.length; i++){
+      var id = tr[i].getElementsByTagName("a")[1].getAttribute("href").split("/")[4];
+      addAttributes(statusTypes, id, tr[i]);
     }
   }
 
@@ -92,12 +91,20 @@
 
   // Inject CSS
   $('<style type="text/css" />').html(
-    ".information, .your-score .text { color: #323232 !important;}" +
-    ".HL-watching {background-color: #34ce0f !important;}" +
-    ".HL-completed {background-color: #ccede4 !important;}" +
-    ".HL-onHold {background-color: #f1c83e !important;}" +
-    ".HL-dropped {background-color: #f76265 !important;}" + 
-    ".HL-planToWatch {background-color: #dcc8aa !important;}" 
+    `.information, .your-score .text {
+        color: #323232 !important;}
+    .top-anime-rank-text.rank1, .top-anime-rank-text.rank2 {
+        color: #5d5c5c;}
+    .HL-watching {
+        background-color: #34ce0f !important;}
+    .HL-completed {
+        background-color: #ccede4 !important;}
+    .HL-onHold {
+        background-color: #f1c83e !important;}
+    .HL-dropped {
+        background-color: #f76265 !important;}
+    .HL-planToWatch {
+        background-color: #dcc8aa !important;}` 
 
     ).appendTo('head');
 
