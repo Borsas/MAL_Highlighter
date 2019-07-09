@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      1.1.2
+// @version      1.2
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -21,19 +21,19 @@
   // Adds attributes to the correct elements
   function addAttributes(statusTypes, id, element){
    if (statusTypes["watching"].includes(parseInt(id))){
-      element.setAttribute("class", "HL-watching");
+      element.classList.add("HL-watching");
 
     }else if (statusTypes["completed"].includes(parseInt(id))){
-      element.setAttribute("class", "HL-completed");
+      element.classList.add("HL-completed");
 
     }else if (statusTypes["onHold"].includes(parseInt(id))){
-      element.setAttribute("class", "HL-onHold");
+      element.classList.add("HL-onHold");
 
     }else if (statusTypes["dropped"].includes(parseInt(id))){
-      element.setAttribute("class", "HL-dropped");
+      element.classList.add("HL-dropped");
 
     }else if (statusTypes["planToWatch"].includes(parseInt(id))){
-      element.setAttribute("class", "HL-planToWatch");
+      element.classList.add("HL-planToWatch");
     }
   }
 
@@ -59,6 +59,17 @@
      if (url.length == 6){var id = url[4]}
       addAttributes(statusTypes, id, tr[i]);
     }
+  }
+
+  // Change color on https://myanimelist.net/anime/producer/*
+  function colorProducerPage(statusTypes){
+    var allShows = document.getElementsByClassName("seasonal-anime");
+
+    for (var i = 0; i < allShows.length; i++){
+      var id = allShows[i].getElementsByClassName("link-title")[0].getAttribute("href").split("/")[4];
+      addAttributes(statusTypes, id, allShows[i]);
+    }
+
   }
 
 
@@ -95,6 +106,8 @@
         color: #323232 !important;}
     .top-anime-rank-text.rank1, .top-anime-rank-text.rank2 {
         color: #5d5c5c;}
+    .top-ranking-table tr.ranking-list td {
+      background-color: transparent !important;}
     .HL-watching {
         background-color: #34ce0f !important;}
     .HL-completed {
@@ -118,6 +131,8 @@
       colorTopAnime(statusTypes);
     } else if(url.match(/^https?:\/\/myanimelist\.net\/people\/\d*\/.*/)){
       colorPeoplePage(statusTypes);
+    }else if (url.match(/^https?:\/\/myanimelist\.net\/anime\/producer\/\d*\/.*/)){
+      colorProducerPage(statusTypes);
     }
 
   });
