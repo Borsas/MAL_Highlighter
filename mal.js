@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      1.2.1
+// @version      1.3
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -11,12 +11,23 @@
 (function() {
   'use strict';
 
-  // Get data from MALs json handler
-  function getData(username){
-    return fetch('https://myanimelist.net/animelist/'+ username +'/load.json?status=7')
-    .then(response => response.json())
-    .catch(error => console.log(error));
+  // Get data from MALs json handler or from sessionstorage, depending which has it.
+  async function getData(username){
+
+    if(sessionStorage.getItem("animeData")){
+      console.log("Loaded data from memory");
+      return JSON.parse(sessionStorage.getItem("animeData"));
+
+    } else {  
+    let response =  await fetch('https://myanimelist.net/animelist/'+ username +'/load.json?status=7');
+    let data = await response.json();
+
+    sessionStorage.setItem("animeData", JSON.stringify(data));
+    console.log("Loaded data from MAL API");
+    return data;
+    }
   }
+
 
   // Adds attributes to the correct elements
   function addAttributes(statusTypes, id, element){
@@ -73,8 +84,8 @@
     }
   }
 
-  // Change color on https://myanimelist.net/anime/producer/*
-  function colorProducerPage(statusTypes){
+  // Change color on producer and season page.
+  function colorGenericPage(statusTypes){
     var allShows = document.getElementsByClassName("seasonal-anime");
 
     for (var i = 0; i < allShows.length; i++){
@@ -110,6 +121,11 @@
   // Get username
   var user = document.getElementsByClassName('header-profile-link')[0].text;
 
+  //if(document.getElementsByClassName("btn-user-status-add-list")){
+    //document.getElementsByClassName("btn-user-status-add-list")[0].setAttribute('onclick', 'sessionStorage.clear(); return false;');
+    //console.log("clear button");
+  //}
+
   // Inject CSS
   $('<style type="text/css" />').html(
     `.information, .your-score .text {
@@ -131,19 +147,20 @@
 
     ).appendTo('head');
 
-  // "main" function, keeps the stuff running and i dont know what else to do :XD:
-  getData(user).then(data => {
-
-    var statusTypes = getStatusTypes(data)
+  // Main function, this shit runs it all
+  async function main(){
+    var data = await getData(user);
+    var statusTypes = getStatusTypes(data);
     var url = window.location.href;
 
     if (url.match(/^https?:\/\/myanimelist\.net\/topanime\.php/)){
       colorTopAnime(statusTypes);
     } else if(url.match(/^https?:\/\/myanimelist\.net\/people\/\d*\/.*/)){
       colorPeoplePage(statusTypes);
-    }else if (url.match(/^https?:\/\/myanimelist\.net\/anime\/producer\/\d*\/.*/)){
-      colorProducerPage(statusTypes);
+    }else if (url.match(/^https?:\/\/myanimelist\.net\/anime\/(season((\d*\/.*|$)|^\s*$)|producer\/*)/)){
+      colorGenericPage(statusTypes);
     }
+  }
 
-  });
-})();
+  main();
+  })();
