@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      1.2
+// @version      1.2.1
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -39,20 +39,32 @@
 
   // Change color on myanimelist.net/topanime.php
   function colorTopAnime(statusTypes){
-    var tr = document.getElementsByTagName("tr");
+    var tr = document.getElementsByClassName("ranking-list");
 
-    for (var i = 1; i < tr.length; i++){
-      var id = tr[i].getElementsByTagName("a")[1].getAttribute("href").split("/")[4];
+    for (var i = 0; i < tr.length; i++){
+      var id = tr[i].getElementsByTagName("a")[0].getAttribute("href").split("/")[4];
       addAttributes(statusTypes, id, tr[i]);
     }
   }
 
   // Change color on myanimelist.net/people/*/*
   function colorPeoplePage(statusTypes){
-    var tbody = document.getElementsByTagName("tbody")[1];
-    var tr = tbody.getElementsByTagName("tr");
+    var tr = document.getElementsByTagName("tr");
 
-    for (var i = 0; i < tr.length; i++){
+    // Count of garbage tr classes in the bottom that are not wanted
+    // people-comment classes are also added to this if there are any
+    // and manga are also added to this because it will color them with anime colors
+    var bottom = 6;
+
+    if(document.getElementsByClassName("people-comment")){
+       bottom += document.getElementsByClassName("people-comment").length;
+       }
+
+     if(document.getElementsByTagName("tbody")[4].getElementsByTagName("tr")){
+       bottom += document.getElementsByTagName("tbody")[4].getElementsByTagName("tr").length;
+       }
+
+    for (var i = 4; i < tr.length - bottom; i++){
      var series = tr[i].getElementsByTagName("a")[1];
      var url = series.getAttribute("href").split("/")
 
@@ -69,9 +81,7 @@
       var id = allShows[i].getElementsByClassName("link-title")[0].getAttribute("href").split("/")[4];
       addAttributes(statusTypes, id, allShows[i]);
     }
-
   }
-
 
   //Sorts all statuses from the json
   function getStatusTypes(data){
@@ -117,7 +127,7 @@
     .HL-dropped {
         background-color: #f76265 !important;}
     .HL-planToWatch {
-        background-color: #dcc8aa !important;}` 
+        background-color: #dcc8aa !important;}`
 
     ).appendTo('head');
 
