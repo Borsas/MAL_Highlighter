@@ -117,7 +117,7 @@
         }
 
         // Inject CSS
-        injectCsa(){
+        injectCss(){
             $('<style type="text/css"/>').html(
                 `.information, .your-score .text {
                      color: #323232 !important;}
@@ -141,7 +141,7 @@
         // Main function, this shit runs it all
         async main() {
             let data = await this.getData();
-            this.injectCs();
+            this.injectCss();
 
             this.getStatusType(data);
 
