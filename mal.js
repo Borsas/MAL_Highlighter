@@ -50,8 +50,10 @@
             let tr = document.getElementsByClassName('ranking-list');
 
             for (let i = 0; i < tr.length; i++){
-                let id = tr[i].getElementsByTagName('a')[0].getAttribute('href').split('/')[4];
-                this.addAttributes(id, tr[i]);
+                let id = tr[i].getElementsByTagName('a')[0].getAttribute('href').split('/');
+                if (id[3] == this.type) {
+                    this.addAttributes(id[4], tr[i]);
+                }
             }
         }
 
@@ -64,19 +66,19 @@
             // and manga are also added to this because it will color them with anime colors
             let bottom = 6;
 
-            if (document.getElementsByClassName('people-comment'))
+            if (document.getElementsByClassName('people-comment')) {
                 bottom += document.getElementsByClassName('people-comment').length;
+            }
 
-            if (document.getElementsByTagName('tbody')[4].getElementsByTagName('tr'))
-                bottom += document.getElementsByTagName('tbody')[4].getElementsByTagName('tr').length;
-
-            for (let i = 4; i < tr.length - bottom; i++){
+            for (let i = 4; i < tr.length - bottom; i++) {
                 let series = tr[i].getElementsByTagName('a')[1];
                 let url = series.getAttribute('href').split('/');
 
-                if (url.length === 6){
+                if (url.length === 6) {
                     let id = url[4];
-                    this.addAttributes(id, tr[i]);
+                    if (url[3] === this.type) {
+                        this.addAttributes(id, tr[i]);
+                    }
                 }
             }
         }
@@ -86,8 +88,10 @@
             let allShows = document.getElementsByClassName('seasonal-anime');
 
             for (let i = 0; i < allShows.length; i++){
-                let id = allShows[i].getElementsByClassName('link-title')[0].getAttribute('href').split('/')[4];
-                this.addAttributes(id, allShows[i]);
+                let id = allShows[i].getElementsByClassName('link-title')[0].getAttribute('href').split('/');
+                if (id[3] === this.type) {
+                    this.addAttributes(id[4], allShows[i]);
+                }
             }
         }
 
@@ -152,7 +156,7 @@
                 this.colorTopAnime();
             } else if (url.match(/^https?:\/\/myanimelist\.net\/people\/\d*\/.*/)){
                 this.colorPeoplePage();
-            } else if (url.match(/^https?:\/\/myanimelist\.net\/anime\/(season((\d*\/.*|$)|^\s*$)|producer\/*)/)){
+            } else if (url.match(/^https?:\/\/myanimelist\.net\/(anime\/(season((\d*\/.*|$)|^\s*$)|producer\/*)|manga\/magazine\/*)/)){
                 this.colorGenericPage();
             }
         }
