@@ -63,7 +63,6 @@
 
             // Count of garbage tr classes in the bottom that are not wanted
             // people-comment classes are also added to this if there are any
-            // and manga are also added to this because it will color them with anime colors
             let bottom = 6;
 
             if (document.getElementsByClassName('people-comment')) {
