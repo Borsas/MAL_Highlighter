@@ -63,7 +63,7 @@
 
             // Count of garbage tr classes in the bottom that are not wanted
             // people-comment classes are also added to this if there are any
-            let bottom = 6;
+            let bottom = 0;
 
             if (document.getElementsByClassName('people-comment')) {
                 bottom += document.getElementsByClassName('people-comment').length;
@@ -119,33 +119,9 @@
             }
         }
 
-        // Inject CSS
-        injectCss(){
-            $('<style type="text/css"/>').html(
-                `.information, .your-score .text {
-                     color: #323232 !important;}
-                .top-anime-rank-text.rank1, .top-anime-rank-text.rank2 {
-                    color: #5d5c5c;}
-                .top-ranking-table tr.ranking-list td {
-                  background-color: transparent !important;}
-                .HL-watching {
-                    background-color: #34ce0f !important;}
-                .HL-completed {
-                    background-color: #ccede4 !important;}
-                .HL-onHold {
-                    background-color: #f1c83e !important;}
-                .HL-dropped {
-                    background-color: #f76265 !important;}
-                .HL-planToWatch {
-                    background-color: #dcc8aa !important;}`
-            ).appendTo('head');
-        }
-
         // Main function, this shit runs it all
         async main() {
             let data = await this.getData();
-            this.injectCss();
-
             this.getStatusType(data);
 
 
@@ -160,10 +136,101 @@
             }
         }
     }
-    let user = document.getElementsByClassName('header-profile-link')[0].text;
 
-    const animeHL = new Highlighter('anime', user);
-    animeHL.main();
-    const mangaHL = new Highlighter('manga', user);
-    mangaHL.main();
+    class Settings {
+        constructor(){
+            this.watching = "#34ce0f";
+            this.completed = "#ccede4";
+            this.onHold = "#f1c83e";
+            this.dropped = "#f76265";
+            this.planToWatch = "#dcc8aa";
+        }
+
+        // Inject CSS
+        injectCss(){
+            $('<style type="text/css"/>').html(
+                `.settingsWindow {
+                    opacity: 1 !important; 
+                    width: 350px;
+                    height: 600px; 
+                    position: fixed !important;
+                    top: 20% !important;
+                    left: 40% !important;
+                    display: block !important; 
+                    background-color: white;
+                    border-style: solid;
+                    border-width: 0 2px 1px;
+                    border-color: #d9d9d9;
+                    font-size: 20px;
+                }
+                .information, .your-score .text {
+                     color: #323232 !important;}
+                .top-anime-rank-text.rank1, .top-anime-rank-text.rank2 {
+                    color: #5d5c5c;}
+                .top-ranking-table tr.ranking-list td {
+                  background-color: transparent !important;}
+                .HL-watching {
+                    background-color: ` + this.watching + ` !important;}
+                .HL-completed {
+                    background-color: ` + this.completed + ` !important;}
+                .HL-onHold {
+                    background-color: ` + this.onHold + ` !important;}
+                .HL-dropped {
+                    background-color: ` + this.dropped + ` !important;}
+                .HL-planToWatch {
+                    background-color: ` + this.planToWatch + ` !important;}`
+            ).appendTo('head');
+        }  
+
+        main(){
+            let user = document.getElementsByClassName('header-profile-link')[0].text;
+
+            const animeHL = new Highlighter('anime', user);
+            animeHL.main();
+            const mangaHL = new Highlighter('manga', user);
+            mangaHL.main();
+            
+            this.injectCss();
+            this.button();
+
+        }
+
+        button(){
+            var button = document.createElement("li");
+
+            var linkButton = document.createElement("a");
+            linkButton.classList.add("non-link");
+            linkButton.href = "#";
+            linkButton.innerHTML = "Settings";
+            linkButton.addEventListener("click", this.openSettings);
+
+            button.append(linkButton);
+
+            var position = document.getElementById("nav");
+            position.appendChild(button);
+        }
+
+        openSettings(){
+            var position = document.getElementsByClassName("page-common");
+            var settingsBg = document.createElement("div");
+            var settingsWindow = document.createElement("div");
+
+            settingsBg.id = "fancybox-overlay";
+            settingsBg.style = "background-color: rgb(102, 102, 102); opacity: 0.3; display: block;"
+            position[0].append(settingsBg);
+
+            settingsWindow.id = "fancybox-wrap";
+            settingsWindow.classList.add("settingsWindow")
+            settingsWindow.innerHTML = "Settings for MAL Highlighter"
+
+            settingsBg.addEventListener("click", function(){
+                position[0].removeChild(settingsWindow);
+                position[0].removeChild(settingsBg);
+            });
+            position[0].append(settingsWindow);
+        }
+
+    }
+    let start = new Settings();
+    start.main();
 })();
