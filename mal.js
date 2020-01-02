@@ -127,7 +127,7 @@
 
             let url = window.location.href;
 
-            if (url.match(/^https?:\/\/myanimelist\.net\/(topmanga|topanime)\.php/)){
+            if (url.match(/^https?:\/\/myanimelist\.net\/top(manga|anime)\.php/)){
                 this.colorTopAnime();
             } else if (url.match(/^https?:\/\/myanimelist\.net\/people\/\d*\/.*/)){
                 this.colorPeoplePage();
@@ -182,6 +182,18 @@
             ).appendTo('head');
         }  
 
+        injectSettingsMenu(){
+            return
+            `
+            <h1>Settings for MAL Highlighter</h1>
+            <div id="highlighters">
+                <p> Enable Anime Highligter</p>
+                <input type="radio" name="animeHL" value="enable">Enable
+                <input type="radio" name="animeHL" value="disable">Disable
+            </div>
+            `;
+        }
+
         main(){
             let user = document.getElementsByClassName('header-profile-link')[0].text;
 
@@ -202,6 +214,7 @@
             linkButton.classList.add("non-link");
             linkButton.href = "#";
             linkButton.innerHTML = "Settings";
+            linkButton.style = "color: orange;";
             linkButton.addEventListener("click", this.openSettings);
 
             button.append(linkButton);
@@ -220,8 +233,9 @@
             position[0].append(settingsBg);
 
             settingsWindow.id = "fancybox-wrap";
-            settingsWindow.classList.add("settingsWindow")
-            settingsWindow.innerHTML = "Settings for MAL Highlighter"
+            settingsWindow.classList.add("settingsWindow");
+
+            settingsWindow.innerHTML = this.injectSettingsMenu();
 
             settingsBg.addEventListener("click", function(){
                 position[0].removeChild(settingsWindow);
