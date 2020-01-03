@@ -82,6 +82,20 @@
             }
         }
 
+        // Change color on character pages
+        colorCharacterPage(){
+            let leftBox = document.getElementsByClassName("borderClass");
+            let allShows = leftBox[0].getElementsByTagName("tr");
+
+            for(let i = 0; i < allShows.length; i++){
+                let url = allShows[i].getElementsByTagName("a")[0].getAttribute("href").split("/");
+                if(url[3] == this.type){
+                    this.addAttributes(url[4], allShows[i]);
+                }
+            }
+
+        }
+
         // Change color on producer and season page.
         colorGenericPage(){
             let allShows = document.getElementsByClassName('seasonal-anime');
@@ -133,9 +147,12 @@
                 this.colorPeoplePage();
             } else if (url.match(/^https?:\/\/myanimelist\.net\/(anime\/(season((\d*\/.*|$)|^\s*$)|producer\/*)|manga\/magazine\/*)/)){
                 this.colorGenericPage();
+            }else if(url.match(/^https?:\/\/myanimelist\.net\/character\/\d*\/.*/)){
+                this.colorCharacterPage();
             }
         }
     }
+
 
     class Settings {
         constructor(){
@@ -144,6 +161,25 @@
             this.onHold = "#f1c83e";
             this.dropped = "#f76265";
             this.planToWatch = "#dcc8aa";
+            this.animeHL = true;
+            this.mangaHL = true;
+        }
+
+        main(){
+            let user = document.getElementsByClassName('header-profile-link')[0].text;
+
+            const animeHL = new Highlighter('anime', user);
+            animeHL.main();
+            const mangaHL = new Highlighter('manga', user);
+            mangaHL.main();
+            
+            this.injectCss();
+            this.button();
+
+        }
+
+        saveSettings(){
+            
         }
 
         // Inject CSS
@@ -151,17 +187,22 @@
             $('<style type="text/css"/>').html(
                 `.settingsWindow {
                     opacity: 1 !important; 
-                    width: 350px;
+                    width: 450px;
                     height: 600px; 
                     position: fixed !important;
                     top: 20% !important;
-                    left: 40% !important;
+                    left: 35% !important;
                     display: block !important; 
                     background-color: white;
                     border-style: solid;
                     border-width: 0 2px 1px;
                     border-color: #d9d9d9;
                     font-size: 20px;
+                }
+                #HLcolors {
+                    padding: 2px;
+                    text-align: left;
+
                 }
                 .information, .your-score .text {
                      color: #323232 !important;}
@@ -183,39 +224,44 @@
         }  
 
         injectSettingsMenu(){
-            return
-            `
-            <h1>Settings for MAL Highlighter</h1>
-            <div id="highlighters">
-                <p> Enable Anime Highligter</p>
+            return `
+            <h2>Settings for MAL Highlighter</h2>
+            <div id="highlighters" class="h1">
+                Anime Highligter
                 <input type="radio" name="animeHL" value="enable">Enable
                 <input type="radio" name="animeHL" value="disable">Disable
+            </div>
+            <div id="highlighters" class="h1">
+                Manga Highligter
+                <input type="radio" name="mangaHL" value="enable">Enable
+                <input type="radio" name="mangaHL" value="disable">Disable
+            </div>
+
+            <h2>Highlighter colors</h2>
+            <div id="HLcolors">
+                <p style="color:${this.watching}">Watching</p>
+                <p style="color:${this.completed}">Completed</p>
+                <p style="color:${this.onHold}">On hold</p>
+                <p style="color:${this.dropped}">Dropped</p>
+                <p style="color:${this.planToWatch}">Plan to watch</p>
             </div>
             `;
         }
 
-        main(){
-            let user = document.getElementsByClassName('header-profile-link')[0].text;
-
-            const animeHL = new Highlighter('anime', user);
-            animeHL.main();
-            const mangaHL = new Highlighter('manga', user);
-            mangaHL.main();
-            
-            this.injectCss();
-            this.button();
-
-        }
 
         button(){
             var button = document.createElement("li");
-
             var linkButton = document.createElement("a");
+            var self = this;
+
             linkButton.classList.add("non-link");
             linkButton.href = "#";
             linkButton.innerHTML = "Settings";
             linkButton.style = "color: orange;";
-            linkButton.addEventListener("click", this.openSettings);
+
+            linkButton.addEventListener("click", function(){
+                self.openSettings();
+            });
 
             button.append(linkButton);
 
@@ -223,13 +269,14 @@
             position.appendChild(button);
         }
 
+
         openSettings(){
             var position = document.getElementsByClassName("page-common");
             var settingsBg = document.createElement("div");
             var settingsWindow = document.createElement("div");
 
             settingsBg.id = "fancybox-overlay";
-            settingsBg.style = "background-color: rgb(102, 102, 102); opacity: 0.3; display: block;"
+            settingsBg.style = "background-color: rgb(102, 102, 102); opacity: 0.3; display: block;";
             position[0].append(settingsBg);
 
             settingsWindow.id = "fancybox-wrap";
@@ -245,6 +292,7 @@
         }
 
     }
+
     let start = new Settings();
     start.main();
 })();
