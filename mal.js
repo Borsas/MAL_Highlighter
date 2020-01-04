@@ -161,25 +161,64 @@
             this.onHold = "#f1c83e";
             this.dropped = "#f76265";
             this.planToWatch = "#dcc8aa";
-            this.animeHL = true;
-            this.mangaHL = true;
+            this.animeHL = "true";
+            this.mangaHL = "true";
         }
 
         main(){
+            this.loadSettings();
             let user = document.getElementsByClassName('header-profile-link')[0].text;
 
-            const animeHL = new Highlighter('anime', user);
-            animeHL.main();
-            const mangaHL = new Highlighter('manga', user);
-            mangaHL.main();
+            // Because why not, easiest way to convert string to bool
+            if(JSON.parse(this.animeHL)) new Highlighter('anime', user).main();
+            if(JSON.parse(this.mangaHL)) new Highlighter('manga', user).main();
             
             this.injectCss();
             this.button();
 
         }
 
-        saveSettings(){
+        loadSettings(){
+            if(JSON.parse(localStorage.getItem("settings"))){
+                let settings = JSON.parse(localStorage.getItem("settings"));
+
+                this.watching = settings["watching"];
+                this.completed = settings["completed"];
+                this.onHold = settings["onHold"];
+                this.dropped = settings["dropped"];
+                this.planToWatch = settings["planToWatch"];
+                this.animeHL = settings["animeHL"];
+                this.mangaHL = settings["mangaHL"];
+            }
+
+        }
+
+        setSettings(){
+            let settings = {
+                "watching": this.watching,
+                "completed": this.completed,
+                "onHold": this.onHold,
+                "dropped": this.dropped,
+                "planToWatch": this.planToWatch,
+                "animeHL": this.animeHL,
+                "mangaHL": this.mangaHL
+            }
+
+            localStorage.setItem("settings", JSON.stringify(settings));
             
+        }
+
+        saveSettings(){
+            this.watching = document.getElementById("watching").value;
+            this.completed = document.getElementById("completed").value;
+            this.onHold = document.getElementById("onHold").value;
+            this.dropped = document.getElementById("dropped").value;
+            this.planToWatch = document.getElementById("planToWatch").value;
+            this.animeHL = document.getElementById("animeHL").value;
+            this.mangaHL = document.getElementById("mangaHL").value;
+
+            this.setSettings();
+            location.reload();
         }
 
         // Inject CSS
@@ -197,7 +236,7 @@
                     border-style: solid;
                     border-width: 0 2px 1px;
                     border-color: #d9d9d9;
-                    font-size: 20px;
+                    font-size: 15px;
                 }
                 #HLcolors {
                     padding: 2px;
@@ -223,27 +262,39 @@
             ).appendTo('head');
         }  
 
-        injectSettingsMenu(){
+        settingsMenu(){
             return `
             <h2>Settings for MAL Highlighter</h2>
             <div id="highlighters" class="h1">
                 Anime Highligter
-                <input type="radio" name="animeHL" value="enable">Enable
-                <input type="radio" name="animeHL" value="disable">Disable
+                <select id="animeHL">
+                    <option value="true">Enable</option>
+                    <option value="false">Disable</option>
+                </select>
             </div>
             <div id="highlighters" class="h1">
                 Manga Highligter
-                <input type="radio" name="mangaHL" value="enable">Enable
-                <input type="radio" name="mangaHL" value="disable">Disable
+                <select id="mangaHL">
+                    <option value="true">Enable</option>
+                    <option value="false">Disable</option>
+                </select>
             </div>
 
             <h2>Highlighter colors</h2>
             <div id="HLcolors">
                 <p style="color:${this.watching}">Watching</p>
+                <input id="watching" type="text" value="${this.watching}">
                 <p style="color:${this.completed}">Completed</p>
+                <input id="completed" type="text" value="${this.completed}">
                 <p style="color:${this.onHold}">On hold</p>
+                <input id="onHold" type="text" value="${this.onHold}">
                 <p style="color:${this.dropped}">Dropped</p>
+                <input id="dropped" type="text" value="${this.dropped}">
                 <p style="color:${this.planToWatch}">Plan to watch</p>
+                <input id="planToWatch" type="text" value="${this.planToWatch}">
+                <br>
+                <button value="submit" id="saveSettings">Save</button>
+                <button value="submit" id="resetSettings">Reset</button>
             </div>
             `;
         }
@@ -274,6 +325,7 @@
             var position = document.getElementsByClassName("page-common");
             var settingsBg = document.createElement("div");
             var settingsWindow = document.createElement("div");
+            let self = this;
 
             settingsBg.id = "fancybox-overlay";
             settingsBg.style = "background-color: rgb(102, 102, 102); opacity: 0.3; display: block;";
@@ -282,13 +334,21 @@
             settingsWindow.id = "fancybox-wrap";
             settingsWindow.classList.add("settingsWindow");
 
-            settingsWindow.innerHTML = this.injectSettingsMenu();
-
+            settingsWindow.innerHTML = this.settingsMenu();
             settingsBg.addEventListener("click", function(){
                 position[0].removeChild(settingsWindow);
                 position[0].removeChild(settingsBg);
             });
             position[0].append(settingsWindow);
+
+            document.getElementById("saveSettings").addEventListener("click", function(){
+                self.saveSettings();
+            })
+
+            document.getElementById("resetSettings").addEventListener("click", function(){
+                localStorage.clear("settings");
+                location.reload();
+            })
         }
 
     }
