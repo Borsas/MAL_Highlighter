@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      2.2.0
+// @version      2.2.1
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -11,20 +11,27 @@
 (function() {
     'use strict';
 
+    /** Main functionality of the script */
     class Highlighter {
+        /**
+         * What type of data and from which user.
+         * @param {string} type - Either 'anime' or 'manga'
+         * @param {string} username - MAL username
+         */
         constructor(type, username){
             this.type = type;
             this.username = username;
         }
 
-        // Gets the data from MAL's JSON handler every 10800000ms (3h) or if the session storage is empty. 
-        // Otherwise from the session storage.
+        /**
+         * Gets the data from MAL's JSON handler every 10800000ms (3h) or if the session storage is empty. 
+         * Otherwise from the session storage.
+         * @returns {JSON} User data (anime, manga)
+         */
         async getData() {
             const timestamp = new TimeStamp();
             const sessionStorageItem = sessionStorage.getItem(this.type);
-            if (sessionStorageItem) console.log("JOUUU")
-            console.log(timestamp.getTimeStamp())
-            if (Date.now() < (timestamp.getTimeStamp() + 10800000)) console.log("mee KOTIIS")
+
             if (sessionStorageItem && Date.now() < (timestamp.getTimeStamp() + 10800000)){
                 console.log(`Loaded ${this.type} from memory`);
                 timestamp.setTimeStamp()
@@ -43,7 +50,7 @@
                     ).json()
 
                     offset = offset * 2
-                    if (data.length === 0 || offset > 899) break;
+                    if (data.length === 0) break;
                     dataCombined = dataCombined.concat(data)
                 }
 
@@ -54,7 +61,11 @@
             }
         }
 
-        // Adds attributes to the correct elements
+        /**
+         * Adds attributes to the correct elements.
+         * @param {string} id - A numerical id
+         * @param {string} element - HTML element
+         */
         addAttributes(id, element){
             if (this.statusType.watching.includes(parseInt(id))){
                 element.classList.add('HL-watching');
@@ -69,7 +80,7 @@
             }
         }
 
-        // Changes colors on myanimelist.net/topanime.php
+        /** Changes colors on myanimelist.net/topanime.php */
         colorTopAnime(){
             let tr = document.getElementsByClassName('ranking-list');
 
@@ -106,12 +117,12 @@
             }
         }
 
-        // Changes colors on character pages
+        /** Changes colors on character pages */
         colorCharacterPage(){
             let leftBox = document.getElementsByClassName("borderClass");
             let allShows = leftBox[0].getElementsByTagName("tr");
 
-            for(let i = 0; i < allShows.length; i++){
+            for (let i = 0; i < allShows.length; i++){
                 let url = allShows[i].getElementsByTagName("a")[0].getAttribute("href").split("/");
                 if (url[3] == this.type){
                     this.addAttributes(url[4], allShows[i]);
@@ -119,7 +130,7 @@
             }
         }
 
-        // Changes colors on producer and season page.
+        /** Changes colors on producer and season page */
         colorGenericPage(){
             let allShows = document.getElementsByClassName('seasonal-anime');
 
@@ -131,7 +142,10 @@
             }
         }
 
-        // Sorts all statuses from the JSON
+        /** 
+         * Sorts all statuses from the JSON.
+         * @param {JSON} data - User data (anime, manga)
+         */
         getStatusType(data){
             this.statusType = {watching: [], completed: [], onHold: [], dropped: [], planToWatch: []};
             let id = this.type + '_id';
@@ -156,13 +170,15 @@
             }
         }
 
-        // Main function, this shit runs it all
+        /** 
+         * Main function of Highlighter. 
+         * Matches pages and applies colors on them.
+         */
         async main() {
-            let data = await this.getData();
+            const data = await this.getData();
             this.getStatusType(data);
 
-
-            let url = window.location.href;
+            const url = window.location.href;
 
             if (url.match(/^https?:\/\/myanimelist\.net\/top(manga|anime)\.php/)){
                 this.colorTopAnime();
@@ -177,8 +193,11 @@
     }
 
 
-    // Timestamp for loading data from MAL's JSON handler
+    /** Class used for handling the timestamp of the previous request on MAL's JSON handler. */
     class TimeStamp {
+        /**
+         * Saves timestamp (UNIX time in ms) to the browser's local storage as JSON string.
+         */       
         setTimeStamp(){
             const timestamp = { 
                 "JSONLoaded": Date.now().toString()
@@ -188,6 +207,9 @@
             console.log("Timestamp set for MAL's JSON handler call.")
         }
 
+        /**
+         * Gets the timestamp from the local storage as integer.
+         */   
         getTimeStamp(){
             const timestamp = JSON.parse(localStorage.getItem("timestamp"))
             if (timestamp) {
@@ -198,8 +220,9 @@
         }
     }
 
-
+    /** Class used for handling the user settings of the script, such as custom colors. */
     class Settings {
+        /** Default user settings */
         constructor(){
             this.watching = "#34ce0f";
             this.completed = "#ccede4";
@@ -211,21 +234,9 @@
             this.whenLoadedJSON = "0";
         }
 
-        main(){
-            this.loadSettings();
-            let user = document.getElementsByClassName('header-profile-link')[0].text;
-
-            // Because why not, easiest way to convert string to bool
-            if (JSON.parse(this.animeHL)) new Highlighter('anime', user).main();
-            if (JSON.parse(this.mangaHL)) new Highlighter('manga', user).main();
-
-            this.injectCss();
-            this.button();
-
-        }
-
+        /** Loads settings from local storage as JSON and sets them to variables */
         loadSettings(){
-            let settings = JSON.parse(localStorage.getItem("settings"));
+            const settings = JSON.parse(localStorage.getItem("settings"));
             if (settings) {
                 this.watching = settings.watching;
                 this.completed = settings.completed;
@@ -237,8 +248,9 @@
             }
         }
 
+        /** Converts settings to JSON */
         setSettings(){
-            let settings = {
+            const settings = {
                 "watching": this.watching,
                 "completed": this.completed,
                 "onHold": this.onHold,
@@ -251,6 +263,7 @@
             localStorage.setItem("settings", JSON.stringify(settings));
         }
 
+        /** Saves settings to local storage as JSON */
         saveSettings(){
             this.watching = document.getElementById("watching").value;
             this.completed = document.getElementById("completed").value;
@@ -264,7 +277,7 @@
             location.reload();
         }
 
-        // Injects CSS
+        /** Injects custom CSS */
         injectCss(){
             $('<style type="text/css"/>').html(
                 `.settingsWindow {
@@ -305,6 +318,7 @@
             ).appendTo('head');
         }
 
+        /** Custom HTML */
         settingsMenu(){
             return `
             <h2>Settings for MAL Highlighter</h2>
@@ -342,7 +356,22 @@
             `;
         }
 
+        /** Button used to open settings 
+         * @param {string} option - Highlighting enabled? true or false
+         * @param {string} element - HTML element: 'animeHL' or 'mangaHL'
+        */
+        changeSelection(option, element){
+            let selectList = document.getElementById(element);
 
+            for (let i, j = 0; i = selectList.options[j]; j++) {
+                if (i.value == option) {
+                    selectList.selectedIndex = j;
+                    break;
+                }
+            }
+        }
+
+        /** Button used to open settings */
         button(){
             let button = document.createElement("li");
             let linkButton = document.createElement("a");
@@ -363,7 +392,7 @@
             position.appendChild(button);
         }
 
-
+        /** Opens settings menu */
         openSettings(){
             let position = document.getElementsByClassName("page-common");
             let settingsBg = document.createElement("div");
@@ -392,10 +421,29 @@
                 localStorage.clear("settings");
                 location.reload();
             })
-        }
 
+            this.changeSelection(this.animeHL, 'animeHL')
+            this.changeSelection(this.mangaHL, 'mangaHL')
+        }
     }
 
-    let start = new Settings();
-    start.main();
+    /** Runs the script */
+    class StartScript {
+        run(){
+            const settings = new Settings()
+            settings.loadSettings()
+
+            const user = document.getElementsByClassName('header-profile-link')[0].text
+
+            // Because why not, easiest way to convert string to bool
+            if (JSON.parse(settings.animeHL)) new Highlighter('anime', user).main()
+            if (JSON.parse(settings.mangaHL)) new Highlighter('manga', user).main()
+
+            settings.injectCss()
+            settings.button()
+        }
+    }
+
+    const script = new StartScript();
+    script.run();
 })();
