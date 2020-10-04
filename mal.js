@@ -459,6 +459,7 @@
         /** Button used to open settings */
         button(){
             let button = document.createElement("li");
+            button.classList.add("small2");
             let linkButton = document.createElement("a");
             let self = this;
 
@@ -515,17 +516,19 @@
     /** Runs the script */
     class StartScript {
         run(){
-            const settings = new Settings()
-            settings.loadSettings()
+            const settings = new Settings();
+            settings.loadSettings();
 
-            const user = document.getElementsByClassName('header-profile-link')[0].text
+            const profile = document.getElementsByClassName('header-profile-link')[0];
 
-            // Because why not, easiest way to convert string to bool
-            if (JSON.parse(settings.animeHL)) new Highlighter('anime', user).main()
-            if (JSON.parse(settings.mangaHL)) new Highlighter('manga', user).main()
-
-            settings.injectCss()
-            settings.button()
+            if (profile){
+                const user = profile.text;
+                // Because why not, easiest way to convert string to bool
+                if (JSON.parse(settings.animeHL)) new Highlighter('anime', user).main();
+                if (JSON.parse(settings.mangaHL)) new Highlighter('manga', user).main();
+            }
+            settings.injectCss();
+            settings.button();
         }
     }
 
