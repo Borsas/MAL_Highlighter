@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      2.2.1
+// @version      2.2.2
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -24,7 +24,7 @@
         }
 
         /**
-         * Gets the data from MAL's JSON handler every 10800000ms (3h) or if the session storage is empty. 
+         * Gets the data from MAL's JSON handler every 10800000ms (3h) or if the session storage is empty.
          * Otherwise from the session storage.
          * @returns {JSON} User data (anime, manga)
          */
@@ -142,7 +142,7 @@
             }
         }
 
-        /** 
+        /**
          * Sorts all statuses from the JSON.
          * @param {JSON} data - User data (anime, manga)
          */
@@ -170,8 +170,8 @@
             }
         }
 
-        /** 
-         * Main function of Highlighter. 
+        /**
+         * Main function of Highlighter.
          * Matches pages and applies colors on them.
          */
         async main() {
@@ -197,11 +197,11 @@
     class TimeStamp {
         /**
          * Saves timestamp (UNIX time in ms) to the browser's local storage as JSON string.
-         */       
+         */
         setTimeStamp(){
-            const timestamp = { 
+            const timestamp = {
                 "JSONLoaded": Date.now().toString()
-             }
+            }
 
             localStorage.setItem("timestamp", JSON.stringify(timestamp));
             console.log("Timestamp set for MAL's JSON handler call.")
@@ -209,7 +209,7 @@
 
         /**
          * Gets the timestamp from the local storage as integer.
-         */   
+         */
         getTimeStamp(){
             const timestamp = JSON.parse(localStorage.getItem("timestamp"))
             if (timestamp) {
@@ -270,8 +270,8 @@
             this.onHold = document.getElementById("onHold").value;
             this.dropped = document.getElementById("dropped").value;
             this.planToWatch = document.getElementById("planToWatch").value;
-            this.animeHL = document.getElementById("animeHL").value;
-            this.mangaHL = document.getElementById("mangaHL").value;
+            this.animeHL = document.getElementById("animeHL").checked ? "true" : "false";
+            this.mangaHL = document.getElementById("mangaHL").checked ? "true" : "false";
 
             this.setSettings();
             location.reload();
@@ -297,7 +297,90 @@
                 #HLcolors {
                     padding: 2px;
                     text-align: left;
-
+                }
+                #hl-controls {
+                    margin-top: 20px;
+                    text-align: left;
+                    position: absolute;
+                    bottom: 20px;
+                }
+                #hl-controls button {
+                    background-color: #2e51a2;
+                    border-radius: 4px;
+                    color: #fff;
+                    font-family: Avenir,lucida grande,tahoma,verdana,arial,sans-serif;
+                    font-size: 14px;
+                    font-weight: 700;
+                    height: 30px;
+                    padding: 0 6px;
+                    text-align: center;
+                    text-decoration: none;
+                    text-shadow: #323232 -1px -1px 0;
+                    transition-duration: .3s;
+                    transition-property: all;
+                    transition-timing-function: ease-in-out;
+                    vertical-align: middle;
+                    width: 85px;
+                    cursor: pointer;
+                }
+                #hl-color-pickers {
+                    display: flex;
+                }
+                .hl-color-picker {
+                    flex-basis: 20%;
+                    flex-grow: 0;
+                    text-align: center;
+                }
+                .hl-color-picker input[type=color] {
+                    width: 90%;
+                    height: 50px;
+                }
+                .highlighter {
+                    display: flex;
+                    justify-content: space-between;
+                }
+                .switch {
+                    position: relative;
+                    display: inline-block;
+                    width: 45px;
+                    height: 25px;
+                    align-self: flex-end;
+                }
+                .switch input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+                .slider {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: #aaa;
+                    transition: .1s;
+                    border-radius: 34px;
+                }
+                .slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 19px;
+                    width: 19px;
+                    left: 3px;
+                    bottom: 3px;
+                    background-color: white;
+                    transition: .1s;
+                    border-radius: 50%;
+                }
+                input:checked + .slider {
+                    background-color: #39C16C;
+                }
+                input:focus + .slider {
+                    box-shadow: 0 0 1px #39C16C;
+                }
+                input:checked + .slider:before {
+                    transform: translateX(20px);
                 }
                 .information, .your-score .text {
                      color: #323232 !important;}
@@ -322,53 +405,55 @@
         settingsMenu(){
             return `
             <h2>Settings for MAL Highlighter</h2>
-            <div id="highlighters" class="h1">
-                Anime Highligter
-                <select id="animeHL">
-                    <option value="true">Enable</option>
-                    <option value="false">Disable</option>
-                </select>
+            <div class="highlighter h1">
+                <div>
+                    Anime Highlighter
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="animeHL">
+                    <span class="slider"></span>
+                </label>
             </div>
-            <div id="highlighters" class="h1">
-                Manga Highligter
-                <select id="mangaHL">
-                    <option value="true">Enable</option>
-                    <option value="false">Disable</option>
-                </select>
+            <div class="highlighter h1">
+                <div>
+                    Manga Highlighter
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="mangaHL">
+                    <span class="slider"></span>
+                </label>
             </div>
 
             <h2>Highlighter colors</h2>
             <div id="HLcolors">
-                <p style="color:${this.watching}">Watching</p>
-                <input id="watching" type="text" value="${this.watching}">
-                <p style="color:${this.completed}">Completed</p>
-                <input id="completed" type="text" value="${this.completed}">
-                <p style="color:${this.onHold}">On hold</p>
-                <input id="onHold" type="text" value="${this.onHold}">
-                <p style="color:${this.dropped}">Dropped</p>
-                <input id="dropped" type="text" value="${this.dropped}">
-                <p style="color:${this.planToWatch}">Plan to watch</p>
-                <input id="planToWatch" type="text" value="${this.planToWatch}">
-                <br>
+                <div id="hl-color-pickers">
+                    <div class="hl-color-picker">
+                        <p style="color:${this.watching}">Watching</p>
+                        <input id="watching" type="color" value="${this.watching}">
+                    </div>
+                    <div class="hl-color-picker">
+                        <p style="color:${this.completed}">Completed</p>
+                        <input id="completed" type="color" value="${this.completed}">
+                    </div>
+                    <div class="hl-color-picker">
+                        <p style="color:${this.onHold}">On hold</p>
+                        <input id="onHold" type="color" value="${this.onHold}">
+                    </div>
+                    <div class="hl-color-picker">
+                        <p style="color:${this.dropped}">Dropped</p>
+                        <input id="dropped" type="color" value="${this.dropped}">
+                    </div>
+                    <div class="hl-color-picker">
+                        <p style="color:${this.planToWatch}">Planned</p>
+                        <input id="planToWatch" type="color" value="${this.planToWatch}">
+                    </div>    
+                </div>
+            </div>
+            <div id="hl-controls">
                 <button value="submit" id="saveSettings">Save</button>
                 <button value="submit" id="resetSettings">Reset</button>
             </div>
             `;
-        }
-
-        /** Button used to open settings 
-         * @param {string} option - Highlighting enabled? true or false
-         * @param {string} element - HTML element: 'animeHL' or 'mangaHL'
-        */
-        changeSelection(option, element){
-            let selectList = document.getElementById(element);
-
-            for (let i, j = 0; i = selectList.options[j]; j++) {
-                if (i.value == option) {
-                    selectList.selectedIndex = j;
-                    break;
-                }
-            }
         }
 
         /** Button used to open settings */
@@ -422,8 +507,8 @@
                 location.reload();
             })
 
-            this.changeSelection(this.animeHL, 'animeHL')
-            this.changeSelection(this.mangaHL, 'mangaHL')
+            document.getElementById("animeHL").checked = this.animeHL === "true";
+            document.getElementById("mangaHL").checked = this.mangaHL === "true";
         }
     }
 
