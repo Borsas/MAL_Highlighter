@@ -142,6 +142,51 @@
             }
         }
 
+        /** Changes colors on the main page */
+        colorMainPage() {
+            let column = document.getElementsByClassName("right-column")[0];
+            let widgets = column.getElementsByTagName("article");
+
+            // Friend Updates widget has a different format from everything else
+            let friendUpdates = widgets[3].getElementsByClassName("widget-content")[0];
+            this.colorFriendWidget(friendUpdates);
+
+            for (let i = 5; i < widgets.length; i++) {
+                let content = widgets[i].getElementsByTagName("ul")[0].getElementsByTagName("li");
+
+                for (let j = 0; j < content.length; j++) {
+                    let data = content[j].getElementsByClassName("data")[0];
+                    let url = data.getElementsByTagName("a")[0].getAttribute("href").split("/");
+
+                    // Some urls have different format from everything else, so we need to parse it.
+                    let id = this.parseIdFromString(url[5])
+                    if (url[4] === this.type) {
+                        this.addAttributes(id, content[j])
+                    }
+                }
+            }
+        }
+
+        /** Changes the color on the "Recent Friend Updates" box on the main page */
+        colorFriendWidget(element) {
+            let content = element.getElementsByClassName("item");
+            for (let i = 0; i < content.length; i++) {
+                let id = content[i].getElementsByTagName("a")[0].getAttribute("href").split("/");
+                if (id[3] === this.type) {
+                    this.addAttributes(id[4], content[i])
+                }
+            }
+        }
+        /** Parse the Anime or Manga id from string */
+        parseIdFromString(string) {
+            let id = parseInt(string);
+            if (!isNaN(id)) {
+                return id;
+            }
+            // Parses the id from format "add?selected_series_id=11757&hideLayout=1"
+            return string.split("=")[1].split("&")[0];
+        }
+
         /**
          * Sorts all statuses from the JSON.
          * @param {JSON} data - User data (anime, manga)
@@ -188,6 +233,8 @@
                 this.colorGenericPage();
             } else if (url.match(/^https?:\/\/myanimelist\.net\/character\/\d*\/.*/)){
                 this.colorCharacterPage();
+            } else if(url.match(/^https?:\/\/myanimelist\.net\//)) {
+                this.colorMainPage()
             }
         }
     }
