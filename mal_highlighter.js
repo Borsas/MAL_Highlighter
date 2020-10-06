@@ -233,7 +233,7 @@
                 this.colorGenericPage();
             } else if (url.match(/^https?:\/\/myanimelist\.net\/character\/\d*\/.*/)){
                 this.colorCharacterPage();
-            } else if(url.match(/^https?:\/\/myanimelist\.net\//)) {
+            } else if (url.match(/^https?:\/\/myanimelist\.net\//)) {
                 this.colorMainPage()
             }
         }
@@ -475,23 +475,23 @@
             <div id="HLcolors">
                 <div id="hl-color-pickers">
                     <div class="hl-color-picker">
-                        <p style="color:${this.watching}">Watching</p>
+                        <p">Watching</p>
                         <input id="watching" type="color" value="${this.watching}">
                     </div>
                     <div class="hl-color-picker">
-                        <p style="color:${this.completed}">Completed</p>
+                        <p">Completed</p>
                         <input id="completed" type="color" value="${this.completed}">
                     </div>
                     <div class="hl-color-picker">
-                        <p style="color:${this.onHold}">On hold</p>
+                        <p">On hold</p>
                         <input id="onHold" type="color" value="${this.onHold}">
                     </div>
                     <div class="hl-color-picker">
-                        <p style="color:${this.dropped}">Dropped</p>
+                        <p">Dropped</p>
                         <input id="dropped" type="color" value="${this.dropped}">
                     </div>
                     <div class="hl-color-picker">
-                        <p style="color:${this.planToWatch}">Planned</p>
+                        <p">Planned</p>
                         <input id="planToWatch" type="color" value="${this.planToWatch}">
                     </div>    
                 </div>
