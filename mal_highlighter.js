@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      2.2.3
+// @version      2.2.4
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -45,11 +45,11 @@
                 // it has to pull it in batches using offset as MAL only gives 300 objects per request.
                 let offset = 300;
                 while (true) {
-                    const data = await (
+                    let data = await (
                         await fetch(`https://myanimelist.net/${this.type}list/${this.username}/load.json?offset=${offset}&status=7`)
                     ).json()
 
-                    offset = offset * 2
+                    offset += 300
                     if (data.length === 0) break;
                     dataCombined = dataCombined.concat(data)
                 }
@@ -67,15 +67,15 @@
          * @param {string} element - HTML element
          */
         addAttributes(id, element){
-            if (this.statusType.watching.includes(parseInt(id))){
+            if (this.statusType.watching.includes(parseInt(id))) {
                 element.classList.add('HL-watching');
-            } else if (this.statusType.completed.includes(parseInt(id))){
+            } else if (this.statusType.completed.includes(parseInt(id))) {
                 element.classList.add('HL-completed');
-            } else if (this.statusType.onHold.includes(parseInt(id))){
+            } else if (this.statusType.onHold.includes(parseInt(id))) {
                 element.classList.add('HL-onHold');
-            } else if (this.statusType.dropped.includes(parseInt(id))){
+            } else if (this.statusType.dropped.includes(parseInt(id))) {
                 element.classList.add('HL-dropped');
-            } else if (this.statusType.planToWatch.includes(parseInt(id))){
+            } else if (this.statusType.planToWatch.includes(parseInt(id))) {
                 element.classList.add('HL-planToWatch');
             }
         }
@@ -104,7 +104,7 @@
                 bottom += document.getElementsByClassName('people-comment').length;
             }
 
-            for (let i = 4; i < tr.length - bottom; i++) {
+            for (let i = 0; i < tr.length - bottom; i++) {
                 let series = tr[i].getElementsByTagName('a')[1];
                 let url = series.getAttribute('href').split('/');
 
