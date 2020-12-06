@@ -24,7 +24,7 @@
         }
 
         /**
-         * Gets the data from MAL's JSON handler every 10800000ms (3h) or if the session storage is empty.
+         * Gets the data from MAL's JSON handler every 3600000ms (1h) or if the session storage is empty.
          * Otherwise from the session storage.
          * @returns {JSON} User data (anime, manga)
          */
@@ -32,7 +32,7 @@
             const timestamp = new TimeStamp();
             const sessionStorageItem = sessionStorage.getItem(this.type);
 
-            if (sessionStorageItem && Date.now() < (timestamp.getTimeStamp() + 10800000)){
+            if (sessionStorageItem && Date.now() < (timestamp.getTimeStamp() + 3600000)){
                 console.log(`Loaded ${this.type} from memory`);
                 timestamp.setTimeStamp()
                 return JSON.parse(sessionStorageItem);
@@ -41,11 +41,11 @@
                     await fetch(`https://myanimelist.net/${this.type}list/${this.username}/load.json?status=7`)
                 ).json();
 
-                // When getting the data from MAL's JSON handler,
-                // it has to pull it in batches using offset as MAL only gives 300 objects per request.
+                // Aas MAL only gives 300 objects per request, 
+                // the data from MAL's JSON handler has to be pulled in batches using offset
                 let offset = 300;
                 while (true) {
-                    let data = await (
+                    const data = await (
                         await fetch(`https://myanimelist.net/${this.type}list/${this.username}/load.json?offset=${offset}&status=7`)
                     ).json()
 
