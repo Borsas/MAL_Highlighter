@@ -86,7 +86,7 @@
 
             for (let i = 0; i < tr.length; i++){
                 let id = tr[i].getElementsByTagName('a')[0].getAttribute('href').split('/');
-                if (id[3] == this.type) {
+                if (id[3] === this.type) {
                     this.addAttributes(id[4], tr[i]);
                 }
             }
@@ -124,7 +124,7 @@
 
             for (let i = 0; i < allShows.length; i++){
                 let url = allShows[i].getElementsByTagName("a")[0].getAttribute("href").split("/");
-                if (url[3] == this.type){
+                if (url[3] === this.type){
                     this.addAttributes(url[4], allShows[i]);
                 }
             }
@@ -233,7 +233,7 @@
                 this.colorGenericPage();
             } else if (url.match(/^https?:\/\/myanimelist\.net\/character\/\d*\/.*/)){
                 this.colorCharacterPage();
-            } else if (url.match(/^https?:\/\/myanimelist\.net\//)) {
+            } else if (url.match(/^https?:\/\/myanimelist\.net\/$/)) {
                 this.colorMainPage()
             }
         }
@@ -327,7 +327,7 @@
         /** Injects custom CSS */
         injectCss(){
             $('<style type="text/css"/>').html(
-                `.settingsWindow {
+                `.HL-settingsWindow {
                     opacity: 1 !important;
                     width: 450px;
                     height: 600px;
@@ -341,17 +341,17 @@
                     border-color: #d9d9d9;
                     font-size: 15px;
                 }
-                #HLcolors {
+                #HL-colors {
                     padding: 2px;
                     text-align: left;
                 }
-                #hl-controls {
+                #HL-controls {
                     margin-top: 20px;
                     text-align: left;
                     position: absolute;
                     bottom: 20px;
                 }
-                #hl-controls button {
+                #HL-controls button {
                     background-color: #2e51a2;
                     border-radius: 4px;
                     color: #fff;
@@ -370,35 +370,35 @@
                     width: 85px;
                     cursor: pointer;
                 }
-                #hl-color-pickers {
+                #HL-color-pickers {
                     display: flex;
                 }
-                .hl-color-picker {
+                .HL-color-picker {
                     flex-basis: 20%;
                     flex-grow: 0;
                     text-align: center;
                 }
-                .hl-color-picker input[type=color] {
+                .HL-color-picker input[type=color] {
                     width: 90%;
                     height: 50px;
                 }
-                .highlighter {
+                .HL-highlighter {
                     display: flex;
                     justify-content: space-between;
                 }
-                .switch {
+                .HL-switch {
                     position: relative;
                     display: inline-block;
                     width: 45px;
                     height: 25px;
                     align-self: flex-end;
                 }
-                .switch input {
+                .HL-switch input {
                     opacity: 0;
                     width: 0;
                     height: 0;
                 }
-                .slider {
+                .HL-slider {
                     position: absolute;
                     cursor: pointer;
                     top: 0;
@@ -409,7 +409,7 @@
                     transition: .1s;
                     border-radius: 34px;
                 }
-                .slider:before {
+                .HL-slider:before {
                     position: absolute;
                     content: "";
                     height: 19px;
@@ -420,13 +420,13 @@
                     transition: .1s;
                     border-radius: 50%;
                 }
-                input:checked + .slider {
+                input:checked + .HL-slider {
                     background-color: #39C16C;
                 }
-                input:focus + .slider {
+                input:focus + .HL-slider {
                     box-shadow: 0 0 1px #39C16C;
                 }
-                input:checked + .slider:before {
+                input:checked + .HL-slider:before {
                     transform: translateX(20px);
                 }
                 .information, .your-score .text {
@@ -452,53 +452,53 @@
         settingsMenu(){
             return `
             <h2>Settings for MAL Highlighter</h2>
-            <div class="highlighter h1">
+            <div class="HL-highlighter h1">
                 <div>
                     Anime Highlighter
                 </div>
-                <label class="switch">
+                <label class="HL-switch">
                     <input type="checkbox" id="animeHL">
-                    <span class="slider"></span>
+                    <span class="HL-slider"></span>
                 </label>
             </div>
-            <div class="highlighter h1">
+            <div class="HL-highlighter h1">
                 <div>
                     Manga Highlighter
                 </div>
-                <label class="switch">
+                <label class="HL-switch">
                     <input type="checkbox" id="mangaHL">
-                    <span class="slider"></span>
+                    <span class="HL-slider"></span>
                 </label>
             </div>
 
             <h2>Highlighter colors</h2>
-            <div id="HLcolors">
-                <div id="hl-color-pickers">
-                    <div class="hl-color-picker">
+            <div id="HL-colors">
+                <div id="HL-color-pickers">
+                    <div class="HL-color-picker">
                         <p">Watching</p>
                         <input id="watching" type="color" value="${this.watching}">
                     </div>
-                    <div class="hl-color-picker">
+                    <div class="HL-color-picker">
                         <p">Completed</p>
                         <input id="completed" type="color" value="${this.completed}">
                     </div>
-                    <div class="hl-color-picker">
+                    <div class="HL-color-picker">
                         <p">On hold</p>
                         <input id="onHold" type="color" value="${this.onHold}">
                     </div>
-                    <div class="hl-color-picker">
+                    <div class="HL-color-picker">
                         <p">Dropped</p>
                         <input id="dropped" type="color" value="${this.dropped}">
                     </div>
-                    <div class="hl-color-picker">
+                    <div class="HL-color-picker">
                         <p">Planned</p>
                         <input id="planToWatch" type="color" value="${this.planToWatch}">
                     </div>    
                 </div>
             </div>
-            <div id="hl-controls">
-                <button value="submit" id="saveSettings">Save</button>
-                <button value="submit" id="resetSettings">Reset</button>
+            <div id="HL-controls">
+                <button value="submit" id="HL-saveSettings">Save</button>
+                <button value="submit" id="HL-resetSettings">Reset</button>
             </div>
             `;
         }
@@ -537,7 +537,7 @@
             position[0].append(settingsBg);
 
             settingsWindow.id = "fancybox-wrap";
-            settingsWindow.classList.add("settingsWindow");
+            settingsWindow.classList.add("HL-settingsWindow");
 
             settingsWindow.innerHTML = this.settingsMenu();
             settingsBg.addEventListener("click", function(){
@@ -546,11 +546,11 @@
             });
             position[0].append(settingsWindow);
 
-            document.getElementById("saveSettings").addEventListener("click", function(){
+            document.getElementById("HL-saveSettings").addEventListener("click", function(){
                 self.saveSettings();
             })
 
-            document.getElementById("resetSettings").addEventListener("click", function(){
+            document.getElementById("HL-resetSettings").addEventListener("click", function(){
                 localStorage.clear("settings");
                 location.reload();
             })
