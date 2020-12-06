@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MAL Highlighter
 // @namespace    http://keittokilta.fi
-// @version      2.2.3
+// @version      2.2.4
 // @description  Highlights MAL titles with different colors.
 // @author       Borsas
 // @match        https://myanimelist.net/*
@@ -24,7 +24,7 @@
         }
 
         /**
-         * Gets the data from MAL's JSON handler every 10800000ms (3h) or if the session storage is empty.
+         * Gets the data from MAL's JSON handler every 3600000ms (1h) or if the session storage is empty.
          * Otherwise from the session storage.
          * @returns {JSON} User data (anime, manga)
          */
@@ -32,7 +32,7 @@
             const timestamp = new TimeStamp();
             const sessionStorageItem = sessionStorage.getItem(this.type);
 
-            if (sessionStorageItem && Date.now() < (timestamp.getTimeStamp() + 10800000)){
+            if (sessionStorageItem && Date.now() < (timestamp.getTimeStamp() + 3600000)){
                 console.log(`Loaded ${this.type} from memory`);
                 timestamp.setTimeStamp()
                 return JSON.parse(sessionStorageItem);
@@ -41,15 +41,15 @@
                     await fetch(`https://myanimelist.net/${this.type}list/${this.username}/load.json?status=7`)
                 ).json();
 
-                // When getting the data from MAL's JSON handler,
-                // it has to pull it in batches using offset as MAL only gives 300 objects per request.
+                // Aas MAL only gives 300 objects per request, 
+                // the data from MAL's JSON handler has to be pulled in batches using offset
                 let offset = 300;
                 while (true) {
                     const data = await (
                         await fetch(`https://myanimelist.net/${this.type}list/${this.username}/load.json?offset=${offset}&status=7`)
                     ).json()
 
-                    offset = offset * 2
+                    offset += 300
                     if (data.length === 0) break;
                     dataCombined = dataCombined.concat(data)
                 }
@@ -67,15 +67,15 @@
          * @param {string} element - HTML element
          */
         addAttributes(id, element){
-            if (this.statusType.watching.includes(parseInt(id))){
+            if (this.statusType.watching.includes(parseInt(id))) {
                 element.classList.add('HL-watching');
-            } else if (this.statusType.completed.includes(parseInt(id))){
+            } else if (this.statusType.completed.includes(parseInt(id))) {
                 element.classList.add('HL-completed');
-            } else if (this.statusType.onHold.includes(parseInt(id))){
+            } else if (this.statusType.onHold.includes(parseInt(id))) {
                 element.classList.add('HL-onHold');
-            } else if (this.statusType.dropped.includes(parseInt(id))){
+            } else if (this.statusType.dropped.includes(parseInt(id))) {
                 element.classList.add('HL-dropped');
-            } else if (this.statusType.planToWatch.includes(parseInt(id))){
+            } else if (this.statusType.planToWatch.includes(parseInt(id))) {
                 element.classList.add('HL-planToWatch');
             }
         }
@@ -104,7 +104,7 @@
                 bottom += document.getElementsByClassName('people-comment').length;
             }
 
-            for (let i = 4; i < tr.length - bottom; i++) {
+            for (let i = 0; i < tr.length - bottom; i++) {
                 let series = tr[i].getElementsByTagName('a')[1];
                 let url = series.getAttribute('href').split('/');
 
