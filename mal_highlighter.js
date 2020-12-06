@@ -497,8 +497,8 @@
                 </div>
             </div>
             <div id="HL-controls">
-                <button value="submit" id="saveSettings">Save</button>
-                <button value="submit" id="resetSettings">Reset</button>
+                <button value="submit" id="HL-saveSettings">Save</button>
+                <button value="submit" id="HL-resetSettings">Reset</button>
             </div>
             `;
         }
@@ -546,11 +546,11 @@
             });
             position[0].append(settingsWindow);
 
-            document.getElementById("saveSettings").addEventListener("click", function(){
+            document.getElementById("HL-saveSettings").addEventListener("click", function(){
                 self.saveSettings();
             })
 
-            document.getElementById("resetSettings").addEventListener("click", function(){
+            document.getElementById("HL-resetSettings").addEventListener("click", function(){
                 localStorage.clear("settings");
                 location.reload();
             })
